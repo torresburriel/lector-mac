@@ -1,0 +1,63 @@
+name: Publicar versión
+
+# Se lanza a mano desde la pestaña Actions (botón "Run workflow")
+# o automáticamente al subir una etiqueta tipo v1.2.0.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Versión a publicar (p. ej. 1.1.0)"
+        required: true
+        default: "1.1.0"
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Versión
+        id: v
+        run: |
+          V="${{ github.event.inputs.version }}"
+          [ -z "$V" ] && V="${GITHUB_REF_NAME#v}"
+          echo "version=$V" >> "$GITHUB_OUTPUT"
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Empaquetar (Apple Silicon e Intel)
+        run: node build.js arm64,x64
+
+      - name: Firmar ad hoc y comprimir
+        run: |
+          V="${{ steps.v.outputs.version }}"
+          for a in arm64 x64; do
+            codesign --force --deep --sign - "dist/Lector-darwin-$a/Lector.app"
+            codesign --verify --deep --strict "dist/Lector-darwin-$a/Lector.app"
+            ditto -c -k --keepParent "dist/Lector-darwin-$a/Lector.app" "dist/Lector-$V-mac-$a.zip"
+          done
+          ls -la dist/*.zip
+
+      - name: Publicar la release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          V="${{ steps.v.outputs.version }}"
+          gh release create "v$V" dist/Lector-$V-mac-*.zip \
+            --title "Lector $V" \
+            --notes "- **Lector-$V-mac-arm64.zip**: Apple Silicon (M1 o posterior)
+          - **Lector-$V-mac-x64.zip**: Intel
+
+          Descomprime y arrastra Lector.app a Aplicaciones." \
+            || gh release upload "v$V" dist/Lector-$V-mac-*.zip --clobber
