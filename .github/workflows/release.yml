@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: macos-14
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -42,10 +42,12 @@ jobs:
       - name: Firmar ad hoc y comprimir
         run: |
           V="${{ steps.v.outputs.version }}"
+          curl -sSL -o rc.tgz https://github.com/indygreg/apple-platform-rs/releases/download/apple-codesign%2F0.29.0/apple-codesign-0.29.0-x86_64-unknown-linux-musl.tar.gz
+          tar xzf rc.tgz
+          RC=$(find . -name rcodesign -type f | head -1)
           for a in arm64 x64; do
-            codesign --force --deep --sign - "dist/Lector-darwin-$a/Lector.app"
-            codesign --verify --deep --strict "dist/Lector-darwin-$a/Lector.app"
-            ditto -c -k --keepParent "dist/Lector-darwin-$a/Lector.app" "dist/Lector-$V-mac-$a.zip"
+            "$RC" sign "dist/Lector-darwin-$a/Lector.app"
+            (cd "dist/Lector-darwin-$a" && zip -qry -9 "../Lector-$V-mac-$a.zip" Lector.app)
           done
           ls -la dist/*.zip
 
