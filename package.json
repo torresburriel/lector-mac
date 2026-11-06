@@ -1,0 +1,13 @@
+{
+  "name": "lector-mac-build",
+  "private": true,
+  "scripts": {
+    "start": "electron app",
+    "package": "node build.js"
+  },
+  "devDependencies": {
+    "@electron/packager": "18.3.6",
+    "electron": "38.2.0",
+    "png2icons": "2.0.1"
+  }
+}
