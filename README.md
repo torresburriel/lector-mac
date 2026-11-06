@@ -4,6 +4,8 @@ Native macOS app for [Lector](https://reader.torresburriel.es), an RSS reader fa
 
 The app opens Lector in a native Mac window. Your subscriptions, highlights and account are the same as on the web.
 
+![Lector for Mac](docs/social-preview.png)
+
 **[⬇ Download the latest version](https://github.com/torresburriel/lector-mac/releases/latest)**
 
 ## Install
