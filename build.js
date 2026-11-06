@@ -5,7 +5,7 @@ const { packager } = require("@electron/packager");
     dir: "app", out: "dist", name: "Lector", platform: "darwin", arch: arch.split(","),
     electronVersion: "38.2.0", icon: "build/icon.icns", overwrite: true, asar: true,
     appBundleId: "es.torresburriel.lector", appCategoryType: "public.app-category.news",
-    appVersion: "1.1.0", buildVersion: "2", appCopyright: "Torresburriel Estudio",
+    appVersion: "1.1.0", buildVersion: "2", appCopyright: "© Daniel Torres Burriel · GPL-3.0",
     darwinDarkModeSupport: true,
     extendInfo: { LSMinimumSystemVersion: "12.0", NSHumanReadableCopyright: "Torresburriel Estudio" },
   });

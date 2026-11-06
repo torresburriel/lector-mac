@@ -3,6 +3,8 @@
   "productName": "Lector",
   "version": "1.1.0",
   "description": "Lector — app de escritorio para reader.torresburriel.es",
-  "author": "Torresburriel Estudio",
-  "main": "main.js"
+  "author": "Daniel Torres Burriel (Torresburriel Estudio)",
+  "main": "main.js",
+  "license": "GPL-3.0-only",
+  "homepage": "https://github.com/torresburriel/lector-mac"
 }

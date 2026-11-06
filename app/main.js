@@ -275,7 +275,7 @@ if (!app.requestSingleInstanceLock()) {
     app.setAboutPanelOptions({
       applicationName: "Lector",
       applicationVersion: app.getVersion(),
-      copyright: "Torresburriel Estudio · reader.torresburriel.es",
+      copyright: "© Daniel Torres Burriel · GPL-3.0\ngithub.com/torresburriel/lector-mac",
     });
     buildMenu();
     createWindow();
