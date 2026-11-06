@@ -39,14 +39,20 @@ jobs:
       - name: Empaquetar (Apple Silicon e Intel)
         run: node build.js arm64,x64
 
-      - name: Firmar ad hoc y comprimir
+      - name: Firmar, notarizar y comprimir
+        env:
+          MAC_CERT_P12_BASE64: ${{ secrets.MAC_CERT_P12_BASE64 }}
+          MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
+          APPLE_API_KEY_P8: ${{ secrets.APPLE_API_KEY_P8 }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
         run: |
           V="${{ steps.v.outputs.version }}"
           curl -sSL -o rc.tgz https://github.com/indygreg/apple-platform-rs/releases/download/apple-codesign%2F0.29.0/apple-codesign-0.29.0-x86_64-unknown-linux-musl.tar.gz
           tar xzf rc.tgz
-          RC=$(find . -name rcodesign -type f | head -1)
+          RC="$PWD/$(find . -name rcodesign -type f | head -1)"
           for a in arm64 x64; do
-            "$RC" sign "dist/Lector-darwin-$a/Lector.app"
+            scripts/sign-mac.sh "dist/Lector-darwin-$a/Lector.app" "$RC"
             (cd "dist/Lector-darwin-$a" && zip -qry -9 "../Lector-$V-mac-$a.zip" Lector.app)
           done
           ls -la dist/*.zip
